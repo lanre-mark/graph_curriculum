@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphs</title>
+</head>
+<body>
+    <div>
+        <input placeholder="Number of vertices" type="number" id="initialGraphVertInput" />
+        <input name="directed" type="checkbox" id="isDirected" />
+        <label for="directed">Directed</label>
+        <button onClick="createGraph()">Create Graph</button>
+        <button onClick="printGraph()">Print Graph</button>
+    </div>
+    <div>
+        <input placeholder="First Vertex" type="number" id="vertexOne" />
+        <input placeholder="Second Vertex" type="number" id="vertexTwo" />
+        <button onClick="handleAddEdge()">Add Edge</button>    
+    </div>
+    <div>
+        <input placeholder="Source" type="number" id="source" />
+        <button onClick="handleDfs()">Depth First Search</button>
+        <button onClick="handleBfs()">Breadth First Search</button>
+        <div id="result"></div>    
+    </div>
+
+    <script>    
+        class Graph{
+            constructor(numOfVerts){
+                this.adjacencyList=[];
+                this.verts = numOfVerts;
+                for(let i=0;i<numOfVerts;++i){
+                    this.adjacencyList[i]=[];
+                }
+            }
+            addEdge(vert1, vert2){
+                if((this.adjacencyList[vert1].indexOf(vert2) === -1) && (this.adjacencyList[vert2].indexOf(vert2) === -1)){
+                    this.adjacencyList[vert1].push(vert2);
+                    let isDirected = document.getElementById("isDirected");
+                    console.log(isDirected.checked);
+                    if(!isDirected.checked){
+                        this.adjacencyList[vert2].push(vert1);
+                    }
+                }
+            }
+            dfs(source){
+                let stack = [];
+                let visited = [];
+                stack.push(source);
+                while(stack.length > 0){
+                    let currentVertex = stack.pop();
+                    if(visited.indexOf(currentVertex) === -1){
+                        visited.push(currentVertex);
+                        let currentAdjVerts = this.adjacencyList[currentVertex];
+                        for(let i=0;i<currentAdjVerts.length;++i){
+                            stack.push(currentAdjVerts[i]);
+                        }
+                    }
+                }
+                return visited;
+            }
+            bfs(source){
+                let queue = [];
+                let visited = [];
+                queue.push(source);
+                while(queue.length > 0){
+                    let currentVertex = queue.shift();
+                    if(visited.indexOf(currentVertex) === -1){
+                        visited.push(currentVertex);
+                        let currentAdjVerts = this.adjacencyList[currentVertex];
+                        for(let i=0;i<currentAdjVerts.length;++i){
+                            queue.push(currentAdjVerts[i]);
+                        }
+                    }
+                }
+                return visited;
+            }
+        }
+        let graph = new Graph();
+        function createGraph(){
+            let vertexInput = document.getElementById("initialGraphVertInput");
+            graph = new Graph(Number(vertexInput.value));
+        }
+        function printGraph(){
+            console.log(graph);
+        }
+        function handleAddEdge(){
+            let vertexOne = document.getElementById("vertexOne");
+            let vertexTwo = document.getElementById("vertexTwo");
+            graph.addEdge(Number(vertexOne.value), Number(vertexTwo.value));
+            vertexOne.value = "";
+            vertexTwo.value = "";
+        }
+        function handleDfs(){
+            let dfsSource = document.getElementById("source");
+            let result = graph.dfs(Number(dfsSource.value));
+            let placeholder = document.getElementById("result");
+            placeholder.innerHTML = JSON.stringify(result);
+        }
+        function handleBfs(){
+            let dfsSource = document.getElementById("source");
+            let result = graph.bfs(Number(dfsSource.value));
+            let placeholder = document.getElementById("result");
+            placeholder.innerHTML = JSON.stringify(result);
+        }
+    </script>
+</body>
+</html>
